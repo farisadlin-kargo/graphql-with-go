@@ -12,7 +12,6 @@ import (
 )
 
 func (r *mutationResolver) SaveTruck(ctx context.Context, id *string, plateNo string) (*model.Truck, error) {
-	// panic(fmt.Errorf("not implemented"))
 	truck := &model.Truck{
 		ID:      fmt.Sprintf("TRUCK-%d", len(r.Trucks)+1),
 		PlateNo: plateNo,
@@ -22,7 +21,6 @@ func (r *mutationResolver) SaveTruck(ctx context.Context, id *string, plateNo st
 }
 
 func (r *mutationResolver) SaveShipment(ctx context.Context, id *string, name string, origin string, destination string, deliveryDate string, truckID *string) (*model.Shipment, error) {
-	// panic(fmt.Errorf("not implemented"))
 	shipment := &model.Shipment{
 		ID:           fmt.Sprintf("SHIPMENT-%d", len(r.Shipments)+1),
 		Name:         name,
@@ -36,7 +34,6 @@ func (r *mutationResolver) SaveShipment(ctx context.Context, id *string, name st
 }
 
 func (r *mutationResolver) DeleteTruck(ctx context.Context, id string) (bool, error) {
-	// panic(fmt.Errorf("not implemented"))
 	for i, t := range r.Trucks {
 		if t.ID == id {
 			r.Trucks = append(r.Trucks[:i], r.Trucks[i+1:]...)
@@ -47,7 +44,6 @@ func (r *mutationResolver) DeleteTruck(ctx context.Context, id string) (bool, er
 }
 
 func (r *mutationResolver) DeleteShipment(ctx context.Context, id string) (bool, error) {
-	// panic(fmt.Errorf("not implemented"))
 	for i, s := range r.Shipments {
 		if s.ID == id {
 			r.Shipments = append(r.Shipments[:i], r.Shipments[i+1:]...)
@@ -58,12 +54,10 @@ func (r *mutationResolver) DeleteShipment(ctx context.Context, id string) (bool,
 }
 
 func (r *queryResolver) PaginatedTruck(ctx context.Context, page int, first int) ([]*model.Truck, error) {
-	// panic(fmt.Errorf("not implemented"))
 	return r.Trucks, nil
 }
 
 func (r *queryResolver) PaginatedShipment(ctx context.Context, page int, first int) ([]*model.Shipment, error) {
-	// panic(fmt.Errorf("not implemented"))
 	return r.Shipments, nil
 }
 
