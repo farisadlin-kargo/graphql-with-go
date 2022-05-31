@@ -12,6 +12,10 @@ type Shipment {
   truck: Truck!
 }
 
+input EmailDataInput {
+  email: String!
+}
+
 type Query {
   paginatedTruck(page: Int!, first: Int!): [Truck!]!
   paginatedShipment(page: Int!, first: Int!): [Shipment!]!
@@ -29,4 +33,5 @@ type Mutation {
 
   deleteTruck(id: ID!): Boolean!
   deleteShipment(id: ID!): Boolean!
+  emailDataInput(input: EmailDataInput): String!
 }

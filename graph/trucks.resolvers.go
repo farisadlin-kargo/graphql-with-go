@@ -53,6 +53,10 @@ func (r *mutationResolver) DeleteShipment(ctx context.Context, id string) (bool,
 	return false, nil
 }
 
+func (r *mutationResolver) EmailDataInput(ctx context.Context, input *model.EmailDataInput) (string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) PaginatedTruck(ctx context.Context, page int, first int) ([]*model.Truck, error) {
 	return r.Trucks, nil
 }

@@ -47,6 +47,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		DeleteShipment func(childComplexity int, id string) int
 		DeleteTruck    func(childComplexity int, id string) int
+		EmailDataInput func(childComplexity int, input *model.EmailDataInput) int
 		SaveShipment   func(childComplexity int, id *string, name string, origin string, destination string, deliveryDate string, truckID *string) int
 		SaveTruck      func(childComplexity int, id *string, plateNo string) int
 	}
@@ -76,6 +77,7 @@ type MutationResolver interface {
 	SaveShipment(ctx context.Context, id *string, name string, origin string, destination string, deliveryDate string, truckID *string) (*model.Shipment, error)
 	DeleteTruck(ctx context.Context, id string) (bool, error)
 	DeleteShipment(ctx context.Context, id string) (bool, error)
+	EmailDataInput(ctx context.Context, input *model.EmailDataInput) (string, error)
 }
 type QueryResolver interface {
 	PaginatedTruck(ctx context.Context, page int, first int) ([]*model.Truck, error)
@@ -120,6 +122,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteTruck(childComplexity, args["id"].(string)), true
+
+	case "Mutation.emailDataInput":
+		if e.complexity.Mutation.EmailDataInput == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_emailDataInput_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EmailDataInput(childComplexity, args["input"].(*model.EmailDataInput)), true
 
 	case "Mutation.saveShipment":
 		if e.complexity.Mutation.SaveShipment == nil {
@@ -232,7 +246,9 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputEmailDataInput,
+	)
 	first := true
 
 	switch rc.Operation.Operation {
@@ -306,6 +322,10 @@ type Shipment {
   truck: Truck!
 }
 
+input EmailDataInput {
+  email: String!
+}
+
 type Query {
   paginatedTruck(page: Int!, first: Int!): [Truck!]!
   paginatedShipment(page: Int!, first: Int!): [Shipment!]!
@@ -323,6 +343,7 @@ type Mutation {
 
   deleteTruck(id: ID!): Boolean!
   deleteShipment(id: ID!): Boolean!
+  emailDataInput(input: EmailDataInput): String!
 }
 `, BuiltIn: false},
 }
@@ -359,6 +380,21 @@ func (ec *executionContext) field_Mutation_deleteTruck_args(ctx context.Context,
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_emailDataInput_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.EmailDataInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOEmailDataInput2ᚖgithubᚗcomᚋfarisadlinᚑkargoᚋkargoᚑtrucksᚋgraphᚋmodelᚐEmailDataInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -781,6 +817,61 @@ func (ec *executionContext) fieldContext_Mutation_deleteShipment(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteShipment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_emailDataInput(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_emailDataInput(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EmailDataInput(rctx, fc.Args["input"].(*model.EmailDataInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_emailDataInput(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_emailDataInput_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -3177,6 +3268,29 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputEmailDataInput(ctx context.Context, obj interface{}) (model.EmailDataInput, error) {
+	var it model.EmailDataInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -3235,6 +3349,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteShipment(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "emailDataInput":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_emailDataInput(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -4208,6 +4331,14 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOEmailDataInput2ᚖgithubᚗcomᚋfarisadlinᚑkargoᚋkargoᚑtrucksᚋgraphᚋmodelᚐEmailDataInput(ctx context.Context, v interface{}) (*model.EmailDataInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputEmailDataInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
