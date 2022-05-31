@@ -26,9 +26,6 @@ func (r *Resolver) Init() {
 		r.Trucks = append(r.Trucks, truck)
 	}
 
-}
-
-func generateCSVData(data [][]string) (string, error) {
 	records := [][]string{
 		{"id", "plate_no"},
 		{"John", "Doe"},
@@ -47,4 +44,5 @@ func generateCSVData(data [][]string) (string, error) {
 			log.Fatalln("error writing record to file", err)
 		}
 	}
+
 }
